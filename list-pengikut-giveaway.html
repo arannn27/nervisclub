@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NervisClub - List Pengikut Giveaway</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Top Bar / Navigation -->
+    <header class="top-bar">
+        <div class="container">
+            <div class="logo-container">
+                <a href="login-admin.html" class="logo-link">
+                    <img src="/Web Nervis/Gambar/Logo1.png" alt="NervisClub Logo" class="logo">
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="catalog.html">Catalog</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- List Section -->
+    <section class="list-section">
+        <div class="container">
+            <h1 class="page-title">Daftar Pengikut Giveaway</h1>
+            
+            <div class="list-controls">
+                <button onclick="location.reload()" class="btn-refresh">Refresh</button>
+                <button onclick="clearAllEntries()" class="btn-clear">Clear All</button>
+            </div>
+            
+            <div id="entriesList" class="entries-list">
+                <p class="no-entries">Belum ada data pengikut giveaway.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 NervisClub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Load and display entries
+        function loadEntries() {
+            const entries = JSON.parse(localStorage.getItem('giveawayEntries') || '[]');
+            const entriesList = document.getElementById('entriesList');
+            
+            if (entries.length === 0) {
+                entriesList.innerHTML = '<p class="no-entries">Belum ada data pengikut giveaway.</p>';
+                return;
+            }
+            
+            entriesList.innerHTML = '<table class="entries-table"><thead><tr><th>No</th><th>Username Instagram</th><th>Nomor Handphone</th><th>Tanggal</th><th>Aksi</th></tr></thead><tbody></tbody></table>';
+            
+            const tbody = entriesList.querySelector('tbody');
+            entries.forEach((entry, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${entry.instagram}</td>
+                    <td>${entry.phone}</td>
+                    <td>${entry.date}</td>
+                    <td><button onclick="deleteEntry(${index})" class="btn-delete">Hapus</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function deleteEntry(index) {
+            const entries = JSON.parse(localStorage.getItem('giveawayEntries') || '[]');
+            entries.splice(index, 1);
+            localStorage.setItem('giveawayEntries', JSON.stringify(entries));
+            loadEntries();
+        }
+        
+        function clearAllEntries() {
+            if (confirm('Apakah Anda yakin ingin menghapus semua data?')) {
+                localStorage.removeItem('giveawayEntries');
+                loadEntries();
+            }
+        }
+        
+        // Check if user is logged in as admin
+        const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+        if (!isAdmin && window.location.pathname.includes('list-pengikut-giveaway.html')) {
+            // Only redirect if not coming from login
+            if (!document.referrer.includes('login-admin.html')) {
+                window.location.href = 'login-admin.html';
+            }
+        }
+        
+        // Load entries on page load
+        loadEntries();
+    </script>
+</body>
+</html>
+
